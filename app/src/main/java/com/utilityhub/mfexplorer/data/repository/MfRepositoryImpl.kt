@@ -14,7 +14,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 
-private const val CACHE_EXPIRY_MS = 6 * 60 * 60 * 1000L // 6 hours
+private const val CACHE_EXPIRY_MS = 6 * 60 * 60 * 1000L // 6 hrs
 
 @Singleton
 class MfRepositoryImpl @Inject constructor(
@@ -24,7 +24,7 @@ class MfRepositoryImpl @Inject constructor(
 ) : MfRepository {
 
     override suspend fun searchFunds(query: String): Result<List<Fund>> = runCatching {
-        val dtos = apiService.searchFunds(query).take(15) // Limit results for fast loading & no rate limits
+        val dtos = apiService.searchFunds(query).take(15)
         val baseFunds = dtos.map { it.toDomain() }
         
         coroutineScope {
@@ -35,7 +35,7 @@ class MfRepositoryImpl @Inject constructor(
                         val latestNav = detailDto.navHistory.firstOrNull()?.nav ?: ""
                         fund.copy(latestNav = latestNav)
                     } catch (e: Exception) {
-                        fund // Keep as empty string on fail
+                        fund
                     }
                 }
             }.awaitAll()
@@ -43,21 +43,20 @@ class MfRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getFundsByCategory(category: FundCategory): Result<List<Fund>> {
-        // Try cache first
+
         val cached = exploreCacheDao.getCacheForCategory(category.name)
         if (cached != null && !isCacheExpired(cached.cachedAt)) {
             return runCatching {
                 val type = object : TypeToken<List<Fund>>() {}.type
-                gson.fromJson(cached.jsonData, type)
+                gson.fromJson<List<Fund>>(cached.jsonData, type)
             }
         }
 
-        // Fetch from network
+
         return runCatching {
-            val dtos = apiService.searchFunds(category.query).take(30) // Limit to top 30 to avoid API rate limits using ViewAll
+            val dtos = apiService.searchFunds(category.query).take(30)
             val baseFunds = dtos.map { it.toDomain() }
 
-            // Concurrently fetch the latest NAV for these funds
             val fundsWithNav = coroutineScope {
                 baseFunds.map { fund ->
                     async {
@@ -66,13 +65,13 @@ class MfRepositoryImpl @Inject constructor(
                             val latestNav = detailDto.navHistory.firstOrNull()?.nav ?: ""
                             fund.copy(latestNav = latestNav)
                         } catch (e: Exception) {
-                            fund // Fallback to empty string if rate limited
+                            fund
                         }
                     }
                 }.awaitAll()
             }
 
-            // Save to cache
+            // save to cache
             exploreCacheDao.insertCache(
                 ExploreCacheEntity(
                     category = category.name,
@@ -81,10 +80,9 @@ class MfRepositoryImpl @Inject constructor(
             )
             fundsWithNav
         }.recoverCatching { error ->
-            // On network error, return stale cache if available
             if (cached != null) {
                 val type = object : TypeToken<List<Fund>>() {}.type
-                gson.fromJson(cached.jsonData, type)
+                gson.fromJson<List<Fund>>(cached.jsonData, type)
             } else {
                 throw error
             }
@@ -92,12 +90,12 @@ class MfRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getAllFunds(): Result<List<Fund>> {
-        // Try cache first
+
         val cached = exploreCacheDao.getCacheForCategory("ALL_FUNDS")
         if (cached != null && !isCacheExpired(cached.cachedAt)) {
             return runCatching {
                 val type = object : TypeToken<List<Fund>>() {}.type
-                gson.fromJson(cached.jsonData, type)
+                gson.fromJson<List<Fund>>(cached.jsonData, type)
             }
         }
 
@@ -130,7 +128,7 @@ class MfRepositoryImpl @Inject constructor(
         }.recoverCatching { error ->
             if (cached != null) {
                 val type = object : TypeToken<List<Fund>>() {}.type
-                gson.fromJson(cached.jsonData, type)
+                gson.fromJson<List<Fund>>(cached.jsonData, type)
             } else {
                 throw error
             }
@@ -140,7 +138,6 @@ class MfRepositoryImpl @Inject constructor(
     override suspend fun getFundDetail(schemeCode: Int): Result<FundDetail> = runCatching {
         val dto = apiService.getFundDetail(schemeCode)
 
-        // Sample NAV data for chart performance - take 1 point per week for last 3 years
         val allNavData = dto.navHistory
         val sampledNav = sampleNavData(allNavData.map { navDto ->
             NavPoint(navDto.date, navDto.nav.toDoubleOrNull() ?: 0.0)
@@ -165,10 +162,6 @@ class MfRepositoryImpl @Inject constructor(
         )
     }
 
-    /**
-     * Sample NAV data to reduce chart data points.
-     * Takes 1 point per 7 days for performance, max 365 points (7 years weekly).
-     */
     private fun sampleNavData(navPoints: List<NavPoint>): List<NavPoint> {
         if (navPoints.size <= 365) return navPoints
         val step = navPoints.size / 365

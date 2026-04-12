@@ -16,6 +16,7 @@ interface WatchlistRepository {
     fun isFundInAnyWatchlist(schemeCode: Int): Flow<Boolean>
     fun getFolderIdsForFund(schemeCode: Int): Flow<List<Long>>
     suspend fun createFolder(name: String): Long
+    suspend fun updateFolderName(folderId: Long, newName: String)
     suspend fun deleteFolder(folderId: Long)
     suspend fun addFundToFolder(folderId: Long, fund: Fund)
     suspend fun removeFundFromFolder(folderId: Long, schemeCode: Int)

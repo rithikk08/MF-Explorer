@@ -1,9 +1,11 @@
 package com.utilityhub.mfexplorer.presentation.watchlist
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,6 +13,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.outlined.BookmarkBorder
+import androidx.compose.material.icons.outlined.Delete
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,6 +43,86 @@ fun WatchlistScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val colors = LocalCustomColors.current
+    
+    var folderToEdit by remember { mutableStateOf<WatchlistFolder?>(null) }
+    var showEditDialog by remember { mutableStateOf(false) }
+
+    var folderToDelete by remember { mutableStateOf<WatchlistFolder?>(null) }
+    var showDeleteDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteDialog && folderToDelete != null) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = false },
+            containerColor = colors.surfaceCard,
+            title = {
+                Text("Delete Portfolio", color = colors.textPrimary)
+            },
+            text = {
+                Text("Are you sure you want to delete '${folderToDelete?.name}'? This action cannot be undone.", color = colors.textSecondary)
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        viewModel.deleteFolder(folderToDelete!!.id)
+                        showDeleteDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.negativeRed)
+                ) {
+                    Text("Delete", color = Color.White)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = false }) {
+                    Text("Cancel", color = colors.textSecondary)
+                }
+            }
+        )
+    }
+
+    if (showEditDialog && folderToEdit != null) {
+        var newName by remember { mutableStateOf(folderToEdit?.name ?: "") }
+        AlertDialog(
+            onDismissRequest = { showEditDialog = false },
+            containerColor = colors.surfaceCard,
+            title = {
+                Text("Edit Portfolio", color = colors.textPrimary)
+            },
+            text = {
+                OutlinedTextField(
+                    value = newName,
+                    onValueChange = { newName = it },
+                    singleLine = true,
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = colors.accentGold,
+                        unfocusedBorderColor = colors.dividerColor,
+                        focusedTextColor = colors.textPrimary,
+                        unfocusedTextColor = colors.textPrimary,
+                        cursorColor = colors.accentGold
+                    ),
+                    shape = RoundedCornerShape(10.dp)
+                )
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        if (newName.isNotBlank()) {
+                            viewModel.updateFolderName(folderToEdit!!.id, newName)
+                        }
+                        showEditDialog = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = colors.accentGold)
+                ) {
+                    Text("Save", color = colors.darkBg)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showEditDialog = false }) {
+                    Text("Cancel", color = colors.textSecondary)
+                }
+            }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -87,6 +171,14 @@ fun WatchlistScreen(
                                         navController.navigate(
                                             Screen.WatchlistDetail.createRoute(folder.id)
                                         )
+                                    },
+                                    onEdit = {
+                                        folderToEdit = folder
+                                        showEditDialog = true
+                                    },
+                                    onDelete = {
+                                        folderToDelete = folder
+                                        showDeleteDialog = true
                                     }
                                 )
                             }
@@ -162,13 +254,17 @@ private fun WatchlistTopBar() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun WatchlistFolderCard(
     folder: WatchlistFolder,
     accentColor: Color,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit
 ) {
     val colors = LocalCustomColors.current
+    var showMenu by remember { mutableStateOf(false) }
 
     val initials = folder.name
         .split(" ")
@@ -202,8 +298,38 @@ private fun WatchlistFolderCard(
                     strokeWidth = 1.2.dp.toPx()
                 )
             }
-            .clickable { onClick() }
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = { showMenu = true }
+            )
     ) {
+        DropdownMenu(
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false },
+            modifier = Modifier.background(colors.surfaceCard)
+        ) {
+            DropdownMenuItem(
+                text = { Text("Edit Name", color = colors.textPrimary, fontSize = 14.sp) },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Outlined.Edit, contentDescription = "Edit", tint = colors.textSecondary, modifier = Modifier.size(20.dp))
+                },
+                onClick = {
+                    showMenu = false
+                    onEdit()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Delete Portfolio", color = colors.negativeRed, fontSize = 14.sp) },
+                leadingIcon = {
+                    Icon(imageVector = Icons.Outlined.Delete, contentDescription = "Delete", tint = colors.negativeRed, modifier = Modifier.size(20.dp))
+                },
+                onClick = {
+                    showMenu = false
+                    onDelete()
+                }
+            )
+        }
+
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -250,9 +376,10 @@ private fun WatchlistFolderCard(
                         )
                         Text(
                             text = "${folder.fundCount}",
-                            color = accentColor,
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.Bold
+                            color = colors.textTertiary,
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
                         )
                     }
                 } else {

@@ -62,32 +62,32 @@ class FundDetailViewModel @Inject constructor(
 
     val chartUiState: StateFlow<ChartUiState?> = combine(_uiState, _selectedRange) { state, range ->
         if (state is UiState.Success) {
-            val history = state.data.navHistory
-            val filtered = filterNavHistory(history, range)
-            
-            val rangeReturn = if (filtered.size >= 2) {
-                val first = filtered.first().nav
-                val last  = filtered.last().nav
-                ((last - first) / first) * 100.0
-            } else null
+            kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Default) {
+                val history = state.data.navHistory
+                val filtered = filterNavHistory(history, range)
+                
+                val rangeReturn = if (filtered.size >= 2) {
+                    val first = filtered.first().nav
+                    val last  = filtered.last().nav
+                    ((last - first) / first) * 100.0
+                } else null
 
-            val isPositive = if (filtered.isNotEmpty()) {
-                filtered.last().nav >= filtered.first().nav
-            } else true
+                val isPositive = if (filtered.isNotEmpty()) {
+                    filtered.last().nav >= filtered.first().nav
+                } else true
 
-            val maxPoints = 150
-            val step = if (filtered.size > maxPoints) filtered.size / maxPoints else 1
-            val entries = filtered.filterIndexed { index, _ -> index % step == 0 }
-                .mapIndexed { i, point ->
+                val sampledData = downsampleData(filtered, range)
+                val entries = sampledData.mapIndexed { i, point ->
                     FloatEntry(i.toFloat(), point.nav.toFloat())
                 }
 
-            ChartUiState(
-                filteredHistory = filtered,
-                rangeReturn = rangeReturn,
-                isPositive = isPositive,
-                entries = entries
-            )
+                ChartUiState(
+                    filteredHistory = sampledData,
+                    rangeReturn = rangeReturn,
+                    isPositive = isPositive,
+                    entries = entries
+                )
+            }
         } else {
             null
         }
@@ -95,6 +95,30 @@ class FundDetailViewModel @Inject constructor(
 
     init {
         loadFundDetail()
+    }
+
+    private fun downsampleData(data: List<NavPoint>, range: TimeRange): List<NavPoint> {
+        if (data.isEmpty()) return data
+        
+        val maxPoints = when (range) {
+            TimeRange.WEEK_1 -> 7
+            TimeRange.MONTH_1 -> 10
+            TimeRange.MONTH_3 -> 12
+            else -> 12 // 6M, 1Y, 3Y, ALL
+        }
+
+        if (data.size <= maxPoints) return data
+
+        val step = (data.size - 1).toDouble() / (maxPoints - 1)
+        val sampled = mutableListOf<NavPoint>()
+        
+        for (i in 0 until maxPoints - 1) {
+            val index = (i * step).toInt()
+            sampled.add(data[index])
+        }
+        // to ensure latest point is included
+        sampled.add(data.last())
+        return sampled
     }
 
     private fun loadFundDetail() {

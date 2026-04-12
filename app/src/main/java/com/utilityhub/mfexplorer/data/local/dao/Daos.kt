@@ -6,14 +6,22 @@ import com.utilityhub.mfexplorer.data.local.entities.WatchlistFolderEntity
 import com.utilityhub.mfexplorer.data.local.entities.WatchlistFundEntity
 import kotlinx.coroutines.flow.Flow
 
+data class FolderWithCount(
+    @Embedded val folder: WatchlistFolderEntity,
+    @ColumnInfo(name = "fundCount") val fundCount: Int
+)
+
 @Dao
 interface WatchlistDao {
 
-    @Query("SELECT * FROM watchlist_folders ORDER BY createdAt DESC")
-    fun getAllFolders(): Flow<List<WatchlistFolderEntity>>
+    @Query("SELECT f.*, COUNT(fw.id) as fundCount FROM watchlist_folders f LEFT JOIN watchlist_funds fw ON f.id = fw.folderId GROUP BY f.id ORDER BY f.createdAt DESC")
+    fun getAllFolders(): Flow<List<FolderWithCount>>
 
     @Query("SELECT * FROM watchlist_folders WHERE id = :id")
     suspend fun getFolderById(id: Long): WatchlistFolderEntity?
+
+    @Query("UPDATE watchlist_folders SET name = :newName WHERE id = :id")
+    suspend fun updateFolderName(id: Long, newName: String)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertFolder(folder: WatchlistFolderEntity): Long

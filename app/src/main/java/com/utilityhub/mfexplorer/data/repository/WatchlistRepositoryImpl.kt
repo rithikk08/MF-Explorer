@@ -1,5 +1,6 @@
 package com.utilityhub.mfexplorer.data.repository
 
+import com.utilityhub.mfexplorer.data.local.dao.FolderWithCount
 import com.utilityhub.mfexplorer.data.local.dao.WatchlistDao
 import com.utilityhub.mfexplorer.data.local.entities.WatchlistFolderEntity
 import com.utilityhub.mfexplorer.data.local.entities.WatchlistFundEntity
@@ -36,6 +37,9 @@ class WatchlistRepositoryImpl @Inject constructor(
     override suspend fun createFolder(name: String): Long =
         watchlistDao.insertFolder(WatchlistFolderEntity(name = name))
 
+    override suspend fun updateFolderName(folderId: Long, newName: String) =
+        watchlistDao.updateFolderName(folderId, newName)
+
     override suspend fun deleteFolder(folderId: Long) =
         watchlistDao.deleteFolderById(folderId)
 
@@ -57,9 +61,10 @@ class WatchlistRepositoryImpl @Inject constructor(
     override suspend fun isFundInFolder(folderId: Long, schemeCode: Int): Boolean =
         watchlistDao.isFundInFolder(folderId, schemeCode)
 
-    private fun WatchlistFolderEntity.toDomain() = WatchlistFolder(
-        id = id,
-        name = name
+    private fun FolderWithCount.toDomain() = WatchlistFolder(
+        id = folder.id,
+        name = folder.name,
+        fundCount = fundCount
     )
 
     private fun WatchlistFundEntity.toDomain() = WatchlistFund(

@@ -28,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.patrykandpatrick.vico.compose.axis.horizontal.rememberBottomAxis
 import com.patrykandpatrick.vico.compose.axis.vertical.rememberStartAxis
+import com.patrykandpatrick.vico.core.axis.AxisItemPlacer
 import com.patrykandpatrick.vico.compose.chart.Chart
 import com.patrykandpatrick.vico.compose.chart.line.lineChart
 import com.patrykandpatrick.vico.compose.chart.line.lineSpec
@@ -35,6 +36,7 @@ import com.patrykandpatrick.vico.compose.component.shape.shader.fromBrush
 import com.patrykandpatrick.vico.core.component.shape.shader.DynamicShaders
 import com.patrykandpatrick.vico.core.entry.FloatEntry
 import com.patrykandpatrick.vico.core.entry.entryModelOf
+import com.patrykandpatrick.vico.compose.chart.scroll.rememberChartScrollSpec
 import com.utilityhub.mfexplorer.domain.model.Fund
 import com.utilityhub.mfexplorer.domain.model.NavPoint
 import com.utilityhub.mfexplorer.domain.model.WatchlistFolder
@@ -411,7 +413,6 @@ private fun ChartCard(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Chart or empty state
             if (navHistory.isNotEmpty() && chartEntries.isNotEmpty()) {
                 NavHistoryChart(navHistory = navHistory, entries = chartEntries, isPositive = isPositive)
             } else {
@@ -498,16 +499,23 @@ private fun NavHistoryChart(
             )
         ),
         model       = chartEntryModel,
+        chartScrollSpec = rememberChartScrollSpec(isScrollEnabled = false),
         startAxis   = rememberStartAxis(
-            label = rememberAxisLabelComponent(color = colors.textTertiary, textSizeSp = 9f)
+            label = rememberAxisLabelComponent(color = colors.textTertiary, textSizeSp = 9f),
+            itemPlacer = AxisItemPlacer.Vertical.default(maxItemCount = 5)
         ),
         bottomAxis  = rememberBottomAxis(
             label     = rememberAxisLabelComponent(color = colors.textTertiary, textSizeSp = 9f),
+            itemPlacer = AxisItemPlacer.Horizontal.default(spacing = 1, shiftExtremeTicks = false),
             valueFormatter = { value, _ ->
                 val idx = value.toInt().coerceIn(0, navHistory.size - 1)
                 try {
                     val date = LocalDate.parse(navHistory[idx].date, DateTimeFormatter.ofPattern("dd-MM-yyyy"))
-                    date.format(DateTimeFormatter.ofPattern("MMM yy"))
+                    if (navHistory.size <= 10) {
+                        date.format(DateTimeFormatter.ofPattern("d MMM"))
+                    } else {
+                        date.format(DateTimeFormatter.ofPattern("MMM yy"))
+                    }
                 } catch (e: Exception) { "" }
             },
             guideline = null

@@ -20,14 +20,14 @@ val PositiveGreen = Color(0xFF00D4AA)
 val NegativeRed   = Color(0xFFFF4D6A)
 val TextPrimary   = Color(0xFFE8EDF5)
 val TextSecondary = Color(0xFF6878A0)
-val TextTertiary  = Color(0xFF374060)
+val TextTertiary  = Color(0xFF546082)
 val ChartLine     = Color(0xFF4D9FFF)
 val DividerColor  = Color(0xFF161E30)
 
 val CardAccents = listOf(
-    Color(0xFF4D9FFF),  // electric blue
-    Color(0xFF00D4AA),  // cyan-green
-    Color(0xFF7B8FFF),  // periwinkle
+    Color(0xFF4D9FFF),
+    Color(0xFF00D4AA),
+    Color(0xFF7B8FFF),
 )
 
 val FolderAccents = listOf(
@@ -64,7 +64,7 @@ fun darkCustomColors() = CustomAppColors(
     negativeRed   = Color(0xFFFF4D6A),
     textPrimary   = Color(0xFFE8EDF5),
     textSecondary = Color(0xFF6878A0),
-    textTertiary  = Color(0xFF374060),
+    textTertiary  = Color(0xFF546082),
     chartLine     = Color(0xFF4D9FFF),
     dividerColor  = Color(0xFF161E30),
     cardAccents   = listOf(
