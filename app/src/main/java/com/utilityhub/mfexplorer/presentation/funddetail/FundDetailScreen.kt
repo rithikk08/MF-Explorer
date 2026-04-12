@@ -554,13 +554,16 @@ private fun FundInfoRow(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 20.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            InfoCell(label = "TYPE",     value = schemeType)
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                InfoCell(label = "TYPE",     value = schemeType)
+            }
             VerticalDivider()
-            InfoCell(label = "CATEGORY", value = schemeCategory, maxLines = 2)
-            VerticalDivider()
-            InfoCell(label = "AMC",      value = fundHouse, maxLines = 2)
+            Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
+                InfoCell(label = "CATEGORY", value = schemeCategory, maxLines = 2)
+            }
         }
     }
 }
@@ -570,7 +573,7 @@ private fun InfoCell(label: String, value: String, maxLines: Int = 1) {
     val colors = LocalCustomColors.current
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        modifier = Modifier.widthIn(max = 100.dp)
+        modifier = Modifier.padding(horizontal = 8.dp)
     ) {
         Text(
             text          = label,
