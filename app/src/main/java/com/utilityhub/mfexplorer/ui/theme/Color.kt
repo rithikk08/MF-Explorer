@@ -7,40 +7,33 @@ import androidx.compose.runtime.Immutable
 val Purple80 = Color(0xFFD0BCFF)
 val PurpleGrey80 = Color(0xFFCCC2DC)
 val Pink80 = Color(0xFFEFB8C8)
-
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
 
-val DarkBg         = Color(0xFF0F1015)
-val SurfaceDark    = Color(0xFF16181F)
-val SurfaceCard    = Color(0xFF1E2029)
-val AccentGold     = Color(0xFF8B7FE8)
-val AccentGoldDim  = Color(0xFF524B99)
-val PositiveGreen  = Color(0xFF3ECFA0)
-val NegativeRed    = Color(0xFFFF6B6B)
-val TextPrimary    = Color(0xFFF2F3F7)
-val TextSecondary  = Color(0xFF8890A6)
-val TextTertiary   = Color(0xFF484F66)
-val ChartLine      = Color(0xFF8B7FE8)
-val DividerColor   = Color(0xFF22252F)
+val DarkBg        = Color(0xFF080C12)
+val SurfaceDark   = Color(0xFF0E1420)
+val SurfaceCard   = Color(0xFF141C2E)
+val AccentGold    = Color(0xFF4D9FFF)
+val AccentGoldDim = Color(0xFF1A5099)
+val PositiveGreen = Color(0xFF00D4AA)
+val NegativeRed   = Color(0xFFFF4D6A)
+val TextPrimary   = Color(0xFFE8EDF5)
+val TextSecondary = Color(0xFF6878A0)
+val TextTertiary  = Color(0xFF374060)
+val ChartLine     = Color(0xFF4D9FFF)
+val DividerColor  = Color(0xFF161E30)
 
 val CardAccents = listOf(
-    Color(0xFF3ECFA0),
-    Color(0xFF8B7FE8),
-    Color(0xFF56B4D3),
-    Color(0xFFE07B5A),
-    Color(0xFFE8A84B),
-    Color(0xFFB39DDB),
+    Color(0xFF4D9FFF),  // electric blue
+    Color(0xFF00D4AA),  // cyan-green
+    Color(0xFF7B8FFF),  // periwinkle
 )
 
 val FolderAccents = listOf(
-    Color(0xFF3ECFA0),
-    Color(0xFF8B7FE8),
-    Color(0xFF56B4D3),
-    Color(0xFFE07B5A),
-    Color(0xFFE8A84B),
-    Color(0xFFB39DDB),
+    Color(0xFF4D9FFF),
+    Color(0xFF00D4AA),
+    Color(0xFF7B8FFF),
 )
 
 @Immutable
@@ -61,39 +54,54 @@ data class CustomAppColors(
     val folderAccents: List<Color>
 )
 
-// for dark mode
 fun darkCustomColors() = CustomAppColors(
-    darkBg        = Color(0xFF0F1015),
-    surfaceDark   = Color(0xFF16181F),
-    surfaceCard   = Color(0xFF1E2029),
-    accentGold    = Color(0xFF8B7FE8),
-    accentGoldDim = Color(0xFF524B99),
-    positiveGreen = Color(0xFF3ECFA0),
-    negativeRed   = Color(0xFFFF6B6B),
-    textPrimary   = Color(0xFFF2F3F7),
-    textSecondary = Color(0xFF8890A6),
-    textTertiary  = Color(0xFF484F66),
-    chartLine     = Color(0xFF8B7FE8),
-    dividerColor  = Color(0xFF22252F),
-    cardAccents   = CardAccents,
-    folderAccents = FolderAccents
+    darkBg        = Color(0xFF080C12),
+    surfaceDark   = Color(0xFF0E1420),
+    surfaceCard   = Color(0xFF141C2E),
+    accentGold    = Color(0xFF4D9FFF),
+    accentGoldDim = Color(0xFF1A5099),
+    positiveGreen = Color(0xFF00D4AA),
+    negativeRed   = Color(0xFFFF4D6A),
+    textPrimary   = Color(0xFFE8EDF5),
+    textSecondary = Color(0xFF6878A0),
+    textTertiary  = Color(0xFF374060),
+    chartLine     = Color(0xFF4D9FFF),
+    dividerColor  = Color(0xFF161E30),
+    cardAccents   = listOf(
+        Color(0xFF4D9FFF),
+        Color(0xFF629FAD),
+        Color(0xFF7B8FFF),
+    ),
+    folderAccents = listOf(
+        Color(0xFF4D9FFF),
+        Color(0xFF629FAD),
+        Color(0xFF7B8FFF),
+    )
 )
-// light mode
+
 fun lightCustomColors() = CustomAppColors(
-    darkBg        = Color(0xFFF4F4F8),
+    darkBg        = Color(0xFFF0F4FA),
     surfaceDark   = Color(0xFFFFFFFF),
     surfaceCard   = Color(0xFFFFFFFF),
-    accentGold    = Color(0xFF6C61D4),
-    accentGoldDim = Color(0xFF3D378A),
-    positiveGreen = Color(0xFF28A882),
-    negativeRed   = Color(0xFFE84545),
-    textPrimary   = Color(0xFF12131A),
-    textSecondary = Color(0xFF585F78),
-    textTertiary  = Color(0xFF9298AF),
-    chartLine     = Color(0xFF6C61D4),
-    dividerColor  = Color(0xFFE2E3EC),
-    cardAccents   = CardAccents,
-    folderAccents = FolderAccents
+    accentGold    = Color(0xFF1A7AE8),
+    accentGoldDim = Color(0xFF0D4A9E),
+    positiveGreen = Color(0xFF00A888),
+    negativeRed   = Color(0xFFE8364F),
+    textPrimary   = Color(0xFF0A1020),
+    textSecondary = Color(0xFF4A5878),
+    textTertiary  = Color(0xFF8A96B0),
+    chartLine     = Color(0xFF1A7AE8),
+    dividerColor  = Color(0xFFDDE4F0),
+    cardAccents   = listOf(
+        Color(0xFF1A7AE8),
+        Color(0xFF629FAD),
+        Color(0xFF5060CC),
+    ),
+    folderAccents = listOf(
+        Color(0xFF1A7AE8),
+        Color(0xFF629FAD),
+        Color(0xFF5060CC),
+    )
 )
 
 val LocalCustomColors = staticCompositionLocalOf { lightCustomColors() }
