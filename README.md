@@ -19,7 +19,7 @@ The project is divided into distinct layers:
 ### Offline-First & Caching Strategy
 The Data layer implements an offline-first strategy. For the Explore screen, responses from the network are parsed and explicitly saved to the local Room database (`ExploreCacheEntity`). If the network call fails or the user is completely offline, the app gracefully falls back to displaying this cached data alongside a network error UI state.
 
-## 📚 Libraries Used & Their Purpose
+##  Libraries Used & Their Purpose
 
 *   **Jetpack Compose (Material 3)**: The modern declarative UI toolkit used to build the entire presentation layer, including dynamic Light/Dark theme switching, BottomSheets, and infinite scrolling lists (`LazyColumn`).
 *   **Kotlin Coroutines & Flow**: Used extensively for asynchronous programming, background threading, and reactive state management across all architectural layers.
@@ -31,7 +31,7 @@ The Data layer implements an offline-first strategy. For the Explore screen, res
 *   **AndroidX DataStore**: Used for storing simple user preferences natively and asynchronously.
 *   **Navigation Compose**: Handles in-app routing and backstack management entirely within Compose.
 
-## 🚀 Run Instructions
+##  Run Instructions
 
 ### Prerequisites
 *   **Android Studio**: Ladybug, Koala, or a recent version patched for JDK 17+.
@@ -66,7 +66,7 @@ The compiled APK will be output to:
 
 ---
 
-## ✅ Implemented Features & "Brownie Points"
+##  Implemented Features & "Brownie Points"
 *   **Explore Tab**: Categorized mutual fund grids using optimal semantic search queries under the hood since `mfapi.in` lacks a category endpoint.
 *   **Portfolio Management (Watchlist)**: Folder-based watchlist architecture allowing users to create, route funds into, edit, and delete lists via long-press gestures. Includes beautiful empty states.
 *   **Product Details & Charts**: Complete fund details screen mapping AMC profiles and an interactive Vico NAV line graph. Includes a BottomSheet component to manage the fund's folder mapping.
