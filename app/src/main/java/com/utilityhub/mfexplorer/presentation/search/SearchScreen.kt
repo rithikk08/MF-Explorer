@@ -96,8 +96,14 @@ fun SearchScreen(
                                              state.message.contains("Failed to connect", ignoreCase = true) ||
                                              state.message.contains("timeout", ignoreCase = true)
                         
+                        val isServerError = state.message.contains("502", ignoreCase = true) ||
+                                            state.message.contains("503", ignoreCase = true) ||
+                                            state.message.contains("500", ignoreCase = true)
+
                         val displayMessage = if (isNetworkError) {
                             "No internet connection found. Please connect to the internet and try again."
+                        } else if (isServerError) {
+                            "Servers are down, please try again after some time."
                         } else {
                             state.message
                         }
