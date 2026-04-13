@@ -59,8 +59,14 @@ fun ExploreScreen(
                                          msg.contains("Failed to connect", ignoreCase = true) ||
                                          msg.contains("timeout", ignoreCase = true)
                     
+                    val isServerError = msg.contains("502", ignoreCase = true) ||
+                                        msg.contains("503", ignoreCase = true) ||
+                                        msg.contains("500", ignoreCase = true)
+
                     val displayMessage = if (isNetworkError) {
                         "No internet connection found. Please connect to the internet and try again."
+                    } else if (isServerError) {
+                        "Servers are down, please try again after some time."
                     } else {
                         msg
                     }
