@@ -4,7 +4,7 @@ This project was built to satisfy the requirements of the Mutual Fund exploratio
 
 ## 📽️ Submission Materials
 * **[Watch the Video Demo Here](https://drive.google.com/file/d/1AmmHD3skTWtzGijv3B3QW27zfAdBIPWx/view?usp=sharing)**
-* **[Download the APK Here](https://drive.google.com/file/d/1o0ydlc6ct1BBKjKmxo669tQGWqxByOgS/view?usp=drive_link)** 
+* **[Download the APK Here](https://drive.google.com/file/d/1FMaKbaaK2Nwtox_f9tdFde_9udcZ0dYI/view?usp=sharing)** 
 
 ## Architecture
 
